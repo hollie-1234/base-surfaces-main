@@ -1,0 +1,12 @@
+runChecks: true
+allowedCostCenters:
+  - DESIGN
+  - ENGINEERING
+actions:
+  branch-protection-settings:
+    branches:
+    - name: main
+      checks:
+      - name: Generate SBOM
+        appId: Build And Test
+        type: tests

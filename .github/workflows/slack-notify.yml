@@ -1,0 +1,41 @@
+name: Notify Slack on Push
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Parse commit message
+        id: parse
+        env:
+          FULL_MESSAGE: ${{ github.event.head_commit.message }}
+        run: |
+          TITLE=$(echo "$FULL_MESSAGE" | head -n 1)
+          BODY=$(echo "$FULL_MESSAGE" | tail -n +3)
+          EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
+          echo "title<<$EOF" >> "$GITHUB_OUTPUT"
+          echo "$TITLE" >> "$GITHUB_OUTPUT"
+          echo "$EOF" >> "$GITHUB_OUTPUT"
+          EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
+          echo "body<<$EOF" >> "$GITHUB_OUTPUT"
+          echo "$BODY" >> "$GITHUB_OUTPUT"
+          echo "$EOF" >> "$GITHUB_OUTPUT"
+
+      - name: Send Slack notification
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          COMMIT_TITLE: ${{ steps.parse.outputs.title }}
+          CHANGES_SUMMARY: ${{ steps.parse.outputs.body }}
+          COMPARE_URL: ${{ github.event.compare }}
+        run: |
+          jq -n \
+            --arg commit_title "$COMMIT_TITLE" \
+            --arg changes_summary "$CHANGES_SUMMARY" \
+            --arg compare_url "$COMPARE_URL" \
+            '{commit_title: $commit_title, changes_summary: $changes_summary, compare_url: $compare_url}' \
+          | curl -X POST "$SLACK_WEBHOOK_URL" \
+              -H "Content-Type: application/json" \
+              -d @-
