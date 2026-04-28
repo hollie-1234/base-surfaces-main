@@ -27,7 +27,7 @@ export function ActionButtonRow({ accountType = 'personal', onAddMoney, onSend, 
       <div className="action-button-row">
         <div className="action-button-row__scroll">
           <Button v2 size="md" priority="primary" onClick={onSend}>{t('common.send')}</Button>
-          <Button v2 size="md" priority="secondary" onClick={onAddMoney}>{t('common.addMoney')}</Button>
+          <Button v2 size="md" priority="secondary" onClick={onAddMoney}>hollie</Button>
           <Button v2 size="md" priority="secondary" onClick={() => setShowRequestSheet(true)}>
             {isBusiness ? t('common.getPaid') : t('common.request')}
           </Button>

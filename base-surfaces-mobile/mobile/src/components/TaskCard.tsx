@@ -10,9 +10,10 @@ type Props = {
   description: string;
   actionLabel: string;
   actionHref?: string;
+  onAction?: () => void;
 };
 
-export function TaskCard({ icon, sentiment, title, description, actionLabel, actionHref }: Props) {
+export function TaskCard({ icon, sentiment, title, description, actionLabel, actionHref, onAction }: Props) {
   const { shimmerMode } = useShimmer();
 
   if (shimmerMode) return <ShimmerTaskCard />;
@@ -39,7 +40,7 @@ export function TaskCard({ icon, sentiment, title, description, actionLabel, act
             <span className="np-text-body-default">{description}</span>
           </div>
           <div className="task-card__action">
-            <a href={actionHref ?? '#'} className="wds-Button wds-Button--small wds-Button--primary" onClick={(e) => e.preventDefault()}>
+            <a href={actionHref ?? '#'} className="wds-Button wds-Button--small wds-Button--primary" onClick={(e) => { e.preventDefault(); onAction?.(); }}>
               <span className="np-text-body-default-bold wds-Button-content">
                 <span className="wds-Button-label"><span className="wds-Button-labelText">{actionLabel}</span></span>
               </span>

@@ -197,6 +197,13 @@ export function MultiCurrencyAccountCard({
             >
               {t('common.accountDetails')}
             </Button>
+            <Button
+              v2
+              size="sm"
+              priority="secondary-neutral"
+            >
+              pix
+            </Button>
           </div>
         )}
       </div>

@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { Plus, RequestReceive, Send, Savings, Suitcase } from '@transferwise/icons';
+import { Plus, RequestReceive, Send, Savings, Suitcase, AlertCircle } from '@transferwise/icons';
 import { Button } from '@transferwise/components';
 import { Illustration } from '@wise/art';
 import type { AccountType } from '../App';
@@ -90,7 +90,7 @@ const GROUP_BALANCE = groupTotalBalance;
 
 type SendAgainRecipient = { name: string; subtitle: string; avatarUrl?: string; hasFastFlag: boolean; badgeFlagCode?: string };
 
-export function Home({ onNavigate, onNavigateAccount, onNavigateCurrency, onNavigateGroupAccount, onNavigateGroupCurrency, onNavigateJarAccount, onNavigateJarCurrency, accountType = 'personal', balanceHidden, onToggleBalance, onAddMoney, onSend, onSendWithCurrency, onSendAgain, onRequest, onPaymentLink, onAccountDetails }: { onNavigate?: (page: string, push?: boolean) => void; onNavigateAccount?: () => void; onNavigateCurrency?: (code: string) => void; onNavigateGroupAccount?: () => void; onNavigateGroupCurrency?: (code: string) => void; onNavigateJarAccount?: (jarId: string) => void; onNavigateJarCurrency?: (jarId: string, code: string) => void; accountType?: AccountType; balanceHidden?: boolean; onToggleBalance?: () => void; onAddMoney?: () => void; onSend?: () => void; onSendWithCurrency?: (sourceCurrency: string, targetCurrency: string, sourceAmount?: string, targetAmount?: string) => void; onSendAgain?: (recipient: SendAgainRecipient, amount?: string) => void; onRequest?: () => void; onPaymentLink?: () => void; onAccountDetails?: () => void }) {
+export function Home({ onNavigate, onNavigateAccount, onNavigateCurrency, onNavigateGroupAccount, onNavigateGroupCurrency, onNavigateJarAccount, onNavigateJarCurrency, accountType = 'personal', balanceHidden, onToggleBalance, onAddMoney, onSend, onSendWithCurrency, onSendAgain, onRequest, onPaymentLink, onAccountDetails, onNavigateMigration }: { onNavigate?: (page: string, push?: boolean) => void; onNavigateAccount?: () => void; onNavigateCurrency?: (code: string) => void; onNavigateGroupAccount?: () => void; onNavigateGroupCurrency?: (code: string) => void; onNavigateJarAccount?: (jarId: string) => void; onNavigateJarCurrency?: (jarId: string, code: string) => void; accountType?: AccountType; balanceHidden?: boolean; onToggleBalance?: () => void; onAddMoney?: () => void; onSend?: () => void; onSendWithCurrency?: (sourceCurrency: string, targetCurrency: string, sourceAmount?: string, targetAmount?: string) => void; onSendAgain?: (recipient: SendAgainRecipient, amount?: string) => void; onRequest?: () => void; onPaymentLink?: () => void; onAccountDetails?: () => void; onNavigateMigration?: () => void }) {
   const { consumerName, businessName, consumerHomeCurrency, businessHomeCurrency } = usePrototypeNames();
   const { t } = useLanguage();
   const txLabels = useTxLabels();
@@ -209,6 +209,16 @@ export function Home({ onNavigate, onNavigateAccount, onNavigateCurrency, onNavi
       <section className="section">
         <TasksStack>
           {[
+            <TaskCard
+              key="migration"
+              icon={<AlertCircle size={24} />}
+              sentiment="positive"
+              title="You have new account details"
+              description="Start using your new details to receive money and pay bills"
+              actionLabel="Review"
+              actionHref="#"
+              onAction={onNavigateMigration}
+            />,
             <TaskCard
               key="paused"
               icon={<Plus size={24} />}

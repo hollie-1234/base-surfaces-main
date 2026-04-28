@@ -21,6 +21,7 @@ import { CurrentAccount } from './pages/CurrentAccount';
 import { CurrencyPage } from './pages/CurrencyPage';
 import { AccountDetailsList } from './pages/AccountDetailsList';
 import { AccountDetailsPage } from './pages/AccountDetailsPage';
+import { AccountDetailsMigration } from './pages/AccountDetailsMigration';
 import { AddMoneyFlow } from './flows/AddMoneyFlow';
 import { ConvertFlow } from './flows/ConvertFlow';
 import { SendFlow } from './flows/SendFlow';
@@ -42,6 +43,7 @@ type SubPage =
   | { type: 'currency'; code: string; from?: 'account' | 'home' | 'taxes-account' | 'jar-account'; jar?: 'taxes'; jarId?: string }
   | { type: 'account-details-list'; from: 'account' | 'payments' | 'home' }
   | { type: 'account-details'; code: string; from: 'currency' | 'account-details-list' | 'payments'; jar?: 'taxes'; listFrom?: 'account' | 'payments' | 'home' }
+  | { type: 'account-details-migration' }
   | null;
 
 function getInitials(name: string): string {
@@ -132,6 +134,11 @@ function parseUrl(pathname: string): { navItem: string; subPage: SubPage } {
     }
   }
 
+  // Migration page
+  if (pathname === '/account-details-migration') {
+    return { navItem: 'Home', subPage: { type: 'account-details-migration' } };
+  }
+
   // Flow paths — can't reconstruct flow state from URL, so fall through to Home
   if (pathname.startsWith('/send/') || pathname === '/convert' || pathname === '/add' || pathname.startsWith('/request/') || pathname === '/payment-link') {
     return { navItem: 'Home', subPage: null };
@@ -167,6 +174,7 @@ function stateToPath(navItem: string, subPage: SubPage, accountType: AccountType
         const currencyData = currencyList.find((c) => c.code === subPage.code);
         return `/account-details/${currencyData?.balanceId ?? subPage.code}`;
       }
+      case 'account-details-migration': return '/account-details-migration';
     }
   }
   switch (navItem) {
@@ -605,6 +613,9 @@ function AppInner() {
       if (subPage.type === 'account-details') {
         return <AccountDetailsPage code={subPage.code} accountType={accountType} />;
       }
+      if (subPage.type === 'account-details-migration') {
+        return <AccountDetailsMigration onBack={() => handleNavigate('Home', false)} onViewDetails={() => handleNavigateAccountDetailsList('home')} />;
+      }
       if (subPage.type === 'currency') {
         const jarDef = subPage.jarId ? getJar(subPage.jarId) : undefined;
         const currencyList = jarDef ? jarDef.currencies : subPage.jar === 'taxes' ? groupCurrencies : (accountType === 'business' ? businessCurrencies : currencies);
@@ -680,6 +691,7 @@ function AppInner() {
           onRequest={() => handleOpenRequest(accountType === 'business' ? businessHomeCurrency : consumerHomeCurrency)}
           onPaymentLink={() => handleOpenPaymentLink(accountType === 'business' ? businessHomeCurrency : consumerHomeCurrency)}
           onAccountDetails={() => handleNavigateAccountDetailsList('home')}
+          onNavigateMigration={() => setSubPage({ type: 'account-details-migration' })}
         />
       );
     }
